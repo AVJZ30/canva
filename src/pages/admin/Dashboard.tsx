@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, UserCheck, UserX, Inbox, CheckCircle2, XCircle, Coins } from 'lucide-react';
+import { Users, UserCheck, UserX, Inbox, CheckCircle2, XCircle, Coins, CalendarClock } from 'lucide-react';
 import { StatCard } from '@/components/ui/StatCard';
 import { Card } from '@/components/ui/Card';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -10,7 +10,7 @@ import { listResellers } from '@/services/resellers.service';
 import { listAllRequests } from '@/services/requests.service';
 import { useRealtimeTable } from '@/hooks/useRealtimeTable';
 import { isOnline } from '@/services/presence.service';
-import { formatRelativeTime } from '@/lib/utils';
+import { formatRelativeTime, getExpirationDate, daysUntil } from '@/lib/utils';
 import type { Profile, CanvaRequest } from '@/types/database';
 
 export default function AdminDashboard() {
@@ -42,6 +42,15 @@ export default function AdminDashboard() {
   const recientes = requests.slice(0, 6);
   const resellersByName = Object.fromEntries(resellers.map((r) => [r.id, r]));
   const topResellers = [...resellers].slice(0, 6);
+
+  const expiringSoon = useMemo(() => {
+    return requests
+      .filter((r) => r.status === 'approved' && r.resolved_at)
+      .map((r) => ({ request: r, days: daysUntil(getExpirationDate(r.resolved_at, r.duration_months)!) }))
+      .filter((x) => x.days <= 7)
+      .sort((a, b) => a.days - b.days)
+      .slice(0, 5);
+  }, [requests]);
 
   return (
     <div>
@@ -112,6 +121,33 @@ export default function AdminDashboard() {
           )}
         </Card>
       </div>
+
+      {expiringSoon.length > 0 && (
+        <Card className="mt-6 overflow-hidden border-amber-500/25">
+          <div className="flex items-center justify-between border-b border-ink-700/70 px-5 py-4">
+            <div className="flex items-center gap-2">
+              <CalendarClock className="size-4 text-amber-400" />
+              <h2 className="font-display text-sm font-semibold text-ink-100">Correos por vencer</h2>
+            </div>
+            <Link to="/admin/vencimientos" className="text-xs font-medium text-violet-400 hover:text-violet-300">
+              Ver todos
+            </Link>
+          </div>
+          <div className="divide-y divide-ink-700/60">
+            {expiringSoon.map(({ request, days }) => (
+              <div key={request.id} className="flex items-center justify-between gap-3 px-5 py-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-ink-100">{request.email}</p>
+                  <p className="text-xs text-ink-500">{resellersByName[request.reseller_id]?.username ?? '—'}</p>
+                </div>
+                <span className={`text-xs font-medium ${days < 0 ? 'text-rose-400' : 'text-amber-400'}`}>
+                  {days < 0 ? `Vencido hace ${Math.abs(days)} d` : days === 0 ? 'Vence hoy' : `Vence en ${days} d`}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

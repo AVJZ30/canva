@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { LayoutDashboard, Users, Inbox, Coins, History, Activity, Settings, MailPlus } from 'lucide-react';
+import { LayoutDashboard, Users, Inbox, Coins, History, Activity, Settings, MailPlus, CalendarClock } from 'lucide-react';
 import { Sidebar, type NavItem } from '@/components/layout/Sidebar';
 import { MobileTopbar } from '@/components/layout/MobileNav';
 import { supabase } from '@/lib/supabase';
@@ -60,6 +60,7 @@ export default function AdminLayout() {
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/admin/revendedores', label: 'Revendedores', icon: Users },
     { to: '/admin/solicitudes', label: 'Solicitudes Canva', icon: Inbox, badge: unread },
+    { to: '/admin/vencimientos', label: 'Vencimientos', icon: CalendarClock },
     { to: '/admin/creditos', label: 'Créditos', icon: Coins },
     { to: '/admin/historial', label: 'Historial', icon: History },
     { to: '/admin/actividad', label: 'Actividad', icon: Activity },

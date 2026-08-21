@@ -10,6 +10,7 @@ import AdminDashboard from '@/pages/admin/Dashboard';
 import AdminResellers from '@/pages/admin/Resellers';
 import AdminResellerDetail from '@/pages/admin/ResellerDetail';
 import AdminRequests from '@/pages/admin/Requests';
+import AdminExpirations from '@/pages/admin/Expirations';
 import AdminCredits from '@/pages/admin/Credits';
 import AdminHistory from '@/pages/admin/History';
 import AdminActivity from '@/pages/admin/Activity';
@@ -52,6 +53,7 @@ export default function App() {
             <Route path="revendedores" element={<AdminResellers />} />
             <Route path="revendedores/:id" element={<AdminResellerDetail />} />
             <Route path="solicitudes" element={<AdminRequests />} />
+            <Route path="vencimientos" element={<AdminExpirations />} />
             <Route path="creditos" element={<AdminCredits />} />
             <Route path="historial" element={<AdminHistory />} />
             <Route path="actividad" element={<AdminActivity />} />

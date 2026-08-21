@@ -58,3 +58,28 @@ export function formatDuration(months: number): string {
   if (months === 36) return '3 años';
   return `${months} ${months === 1 ? 'mes' : 'meses'}`;
 }
+
+export function addMonths(date: Date, months: number): Date {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return result;
+}
+
+/** Fecha de vencimiento de un correo aprobado: fecha de aprobación + duración del plan. */
+export function getExpirationDate(resolvedAt: string | null, durationMonths: number): Date | null {
+  if (!resolvedAt) return null;
+  return addMonths(new Date(resolvedAt), durationMonths);
+}
+
+/** Días restantes hasta el vencimiento (negativo si ya venció). */
+export function daysUntil(date: Date): number {
+  const diffMs = date.getTime() - Date.now();
+  return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+}
+
+export function formatExpirationLabel(days: number): string {
+  if (days < 0) return `Vencido hace ${Math.abs(days)} d`;
+  if (days === 0) return 'Vence hoy';
+  if (days === 1) return 'Vence mañana';
+  return `Vence en ${days} d`;
+}
