@@ -1,0 +1,34 @@
+-- =====================================================================
+-- CANVASOLUCION - SEED / CREACIÓN DEL ADMINISTRADOR INICIAL
+-- =====================================================================
+-- Supabase Auth requiere un usuario en auth.users (con contraseña
+-- hasheada de forma segura por Supabase, NUNCA en texto plano en una
+-- tabla propia). Ese usuario no se puede crear con SQL puro porque el
+-- hashing de la contraseña lo hace GoTrue (el servicio de Auth), no
+-- Postgres directamente.
+--
+-- Por eso el administrador se crea en DOS PASOS:
+--
+--   1) Crear el usuario en auth.users usando el script
+--      "scripts/create-admin.mjs" (incluido en el proyecto), que usa
+--      la Supabase Admin API con la Service Role Key. Este script se
+--      ejecuta UNA SOLA VEZ, de forma local/segura, y NUNCA en el
+--      frontend. Ver README.md sección "Crear el administrador".
+--
+--   2) Ese script inserta automáticamente la fila correspondiente en
+--      public.profiles con role = 'admin' y username = 'solucionesavj'.
+--
+-- Si prefieres hacerlo manualmente desde el Dashboard de Supabase:
+--
+--   a) Authentication -> Users -> Add user
+--      Email: admin@solucionesavj.local (o el correo real que uses)
+--      Password: solucionesavj
+--      Marca "Auto Confirm User"
+--
+--   b) Copia el UUID del usuario creado y ejecuta en el SQL Editor:
+--
+--      insert into public.profiles (user_id, username, full_name, role, credits, is_active)
+--      values ('PEGA_AQUI_EL_UUID', 'solucionesavj', 'Administrador', 'admin', 0, true)
+--      on conflict (user_id) do update set role = 'admin', username = 'solucionesavj';
+--
+-- =====================================================================
